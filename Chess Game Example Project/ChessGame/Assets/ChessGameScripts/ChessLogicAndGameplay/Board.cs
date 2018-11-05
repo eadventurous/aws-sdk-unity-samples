@@ -28,8 +28,10 @@ namespace AWSSDK.Examples.ChessGame
                 additionalUri += "/?";
                 foreach (var key in requestParams.Keys)
                 {
-                    additionalUri += key + "=" + requestParams[key];
+                    additionalUri += key + "=" + requestParams[key] + "&";
                 }
+
+                additionalUri = additionalUri.Remove(additionalUri.Length - 1);
             }
             using (UnityWebRequest www = UnityWebRequest.Get(GatewayUri+additionalUri))
             {
