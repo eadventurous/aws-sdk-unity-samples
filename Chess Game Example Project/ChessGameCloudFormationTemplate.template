@@ -146,7 +146,7 @@
         "Code": {
           "ZipFile": "function checkMatchId(e,a,n,t){var I=e+a,c={TableName:TABLE_NAME,Key:{MatchId:I}};dynamo.getItem(c,function(c,o){c?n.fail(c):Object.keys(o).length>0?checkMatchId(e,a+1,n,t):t(I)})}console.log('Loading function');var TABLE_NAME='ChessMatches',INITIAL_FEN='rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1',INITIAL_LONG_ALG_NOTATION=' ',doc=require('dynamodb-doc'),dynamo=new doc.DynamoDB();exports.handler=function(e,a){var n=e.requesterId,t=e.opponentId;n&&t||a.fail('Must provide requesterId and opponentId');var I,c;Math.random()<.5?(I=n,c=t):(I=t,c=n);var o=I+c,d=function(e){dynamo.putItem({TableName:TABLE_NAME,Item:{MatchId:e,BlackPlayerId:I,WhitePlayerId:c,FEN:INITIAL_FEN,AlgebraicNotation:INITIAL_LONG_ALG_NOTATION}},function(n){n?a.fail(n):a.succeed(e)})};checkMatchId(o,0,a,d)};"
         },
-        "Runtime": "nodejs",
+        "Runtime": "nodejs6.10",
         "Timeout": "25"
       },
       "Metadata": {
@@ -243,7 +243,7 @@
             ]
           }
         },
-        "Runtime": "nodejs",
+        "Runtime": "nodejs6.10",
         "Timeout": "25"
       },
       "Metadata": {
