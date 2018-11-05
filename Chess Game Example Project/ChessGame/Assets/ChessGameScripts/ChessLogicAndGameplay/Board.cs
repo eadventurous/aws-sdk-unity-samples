@@ -85,7 +85,7 @@ namespace AWSSDK.Examples.ChessGame
 
         public string GetForsythEdwardsNotation()
         {
-            throw new System.NotImplementedException();
+            return GetResponse("get_forsyth_edward_notation", null);
         }
 
         public ChessData.ChessPiece GetPieceAtCoordinate(ChessData.Coordinate coordinate)
