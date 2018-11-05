@@ -9,6 +9,9 @@ namespace AWSSDK.Examples.ChessGame
     // previous move, applying a move, and determining legal moves. 
     public class BoardState
     {
+        //TODO: in general most of the methods of this class should be implemented on server side
+        //TODO: I commented only some of them - those that are called from BoardUI - others should be sequentially moved to server
+        
         // Refers to count the following sections:
         // positions, player turn, castling, en passant target, halfmove, fullmove.
         private const int FenSectionCount = 6;
@@ -68,8 +71,10 @@ namespace AWSSDK.Examples.ChessGame
         };
         // Indexed by the column to retrieve the file letter.
         private const string ColumnToFile = "abcdefgh";
-
+        
+        //TODO: should be stored and calculated on server
         private ChessPiece[,] BoardGrid;
+        //TODO: should be stored and calculated on server
         private HashSet<ChessMove>[,] PossibleMovesGrid;
 
         public ChessPieceColor TurnColor { get; private set; }
@@ -335,7 +340,8 @@ namespace AWSSDK.Examples.ChessGame
                 }
             }
         }
-
+        
+        //TODO: move to server
         public HashSet<ChessMove> GetPossibleMoves(Coordinate coordinate)
         {
             return new HashSet<ChessMove>(PossibleMovesGrid[coordinate.Row, coordinate.Column]);
@@ -390,7 +396,8 @@ namespace AWSSDK.Examples.ChessGame
             HalfMove = halfMove;
             FullMove = fullMove;
         }
-
+        
+        //TODO: move to server - should be the main endpoint of communcation between client and server
         public BoardState TryApplyMove(ChessMove newMove, out bool putsUserInCheck)
         {
             var newBoardState = new BoardState(this, newMove);
@@ -1130,7 +1137,8 @@ namespace AWSSDK.Examples.ChessGame
             public BoardStateException(string message) : base(message) { }
             public BoardStateException(string message, System.Exception inner) : base(message, inner) { }
         }
-
+        
+        //TODO: ideally call server
         public ChessPiece GetPieceAtCoordinate(Coordinate coordinate)
         {
             return BoardGrid[coordinate.Row, coordinate.Column];
