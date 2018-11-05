@@ -11,10 +11,10 @@ namespace AWSSDK.Examples.ChessGame
         private int _id;
         public ChessData.ChessMove PreviousMove { get; private set; }
         
-        public Board(int matchId)
+        public Board(string matchId)
         {
             var requestParams = new Dictionary<string, string>();
-            requestParams.Add("matchId", matchId.ToString());
+            requestParams.Add("matchId", matchId);
             _id = int.Parse(GetResponse("get_board_id", requestParams));
             
         }
