@@ -22,16 +22,13 @@ namespace AWSSDK.Examples.ChessGame
 
         public string GetResponse(string func, Dictionary<String, String> requestParams)
         {
-            string additionalUri = func;
+            string additionalUri = func + "/?" + "board_id=" + _id.ToString();
             if (requestParams != null)
             {
-                additionalUri += "/?";
                 foreach (var key in requestParams.Keys)
                 {
-                    additionalUri += key + "=" + requestParams[key] + "&";
+                    additionalUri += "&" + key + "=" + requestParams[key];
                 }
-
-                additionalUri = additionalUri.Remove(additionalUri.Length - 1);
             }
             using (UnityWebRequest www = UnityWebRequest.Get(GatewayUri+additionalUri))
             {
