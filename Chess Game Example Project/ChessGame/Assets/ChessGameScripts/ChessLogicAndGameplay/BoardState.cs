@@ -40,13 +40,13 @@ namespace AWSSDK.Examples.ChessGame
             None, White, Black
         }
         // The directions that a rook can move.
-        public static readonly List<int[]> RookDirections = new List<int[]> { new int[2] { 0, 1 }, new int[2] { 0, -1 }, new int[2] { -1, 0 }, new int[2] { 1, 0 } };
+        private static readonly List<int[]> RookDirections = new List<int[]> { new int[2] { 0, 1 }, new int[2] { 0, -1 }, new int[2] { -1, 0 }, new int[2] { 1, 0 } };
         // The directions that a bishop can move.
-        public static readonly List<int[]> BishopDirections = new List<int[]> { new int[2] { 1, 1 }, new int[2] { 1, -1 }, new int[2] { -1, 1 }, new int[2] { -1, -1 } };
+        private static readonly List<int[]> BishopDirections = new List<int[]> { new int[2] { 1, 1 }, new int[2] { 1, -1 }, new int[2] { -1, 1 }, new int[2] { -1, -1 } };
         // The directions that a queen can move, as well as the translational movement of a king.
-        public static readonly List<int[]> QueenDirectionsKingTranslations = new List<int[]> { new int[2] { 0, 1 }, new int[2] { 0, -1 }, new int[2] { -1, 0 }, new int[2] { 1, 0 }, new int[2] { 1, 1 }, new int[2] { 1, -1 }, new int[2] { -1, 1 }, new int[2] { -1, -1 } };
+        private static readonly List<int[]> QueenDirectionsKingTranslations = new List<int[]> { new int[2] { 0, 1 }, new int[2] { 0, -1 }, new int[2] { -1, 0 }, new int[2] { 1, 0 }, new int[2] { 1, 1 }, new int[2] { 1, -1 }, new int[2] { -1, 1 }, new int[2] { -1, -1 } };
         // The distances in x,y that a rook can move.
-        public static readonly List<int[]> KnightTranslations = new List<int[]> { new int[2] { 2, 1 }, new int[2] { 1, 2 }, new int[2] { -2, 1 }, new int[2] { 1, -2 }, new int[2] { 2, -1 }, new int[2] { -1, 2 }, new int[2] { -2, -1 }, new int[2] { -1, -2 } };
+        private static readonly List<int[]> KnightTranslations = new List<int[]> { new int[2] { 2, 1 }, new int[2] { 1, 2 }, new int[2] { -2, 1 }, new int[2] { 1, -2 }, new int[2] { 2, -1 }, new int[2] { -1, 2 }, new int[2] { -2, -1 }, new int[2] { -1, -2 } };
         // Note that the keys are all uppercase, so lowercase letters should be cast to upper to retrieve the piece type
         private static readonly Dictionary<char, ChessPieceType> CharToChessPieceType = new Dictionary<char, ChessPieceType>{
             { 'P', ChessPieceType.Pawn   },
@@ -76,15 +76,16 @@ namespace AWSSDK.Examples.ChessGame
         private ChessPiece[,] BoardGrid;
         //TODO: should be stored and calculated on server
         private HashSet<ChessMove>[,] PossibleMovesGrid;
-
+        
+        //used only 
         public ChessPieceColor TurnColor { get; private set; }
-        public bool WhiteKingsideCastling { get; private set; }
-        public bool WhiteQueensideCastling { get; private set; }
-        public bool BlackKingsideCastling { get; private set; }
-        public bool BlackQueensideCastling { get; private set; }
-        public int HalfMove { get; private set; }
-        public int FullMove { get; private set; }
-        public Coordinate EnPassantTarget { get; private set; }
+        private bool WhiteKingsideCastling { get; set; }
+        private bool WhiteQueensideCastling { get; set; }
+        private bool BlackKingsideCastling { get; set; }
+        private bool BlackQueensideCastling { get; set; }
+        private int HalfMove { get; set; }
+        private int FullMove { get; set; }
+        private Coordinate EnPassantTarget { get; set; }
         public ChessMove PreviousMove { get; private set; }
 
         // Take the current state of the board in Forsyth-Edwards Notation and the Long Algebraic Notation
@@ -109,7 +110,7 @@ namespace AWSSDK.Examples.ChessGame
         public BoardState() : this(InitialGameFen, "") { }
 
         // Make a new board state by applying a new move to an already existing board state.
-        public BoardState(BoardState previousState, ChessMove newMove, bool lookForCheck = true)
+        private BoardState(BoardState previousState, ChessMove newMove, bool lookForCheck = true)
         {
             BoardGrid = new ChessPiece[8, 8];
             if (!newMove.KingsideCastle && !newMove.QueensideCastle)
@@ -414,7 +415,7 @@ namespace AWSSDK.Examples.ChessGame
         }
 
         // Check if the king capturable in this game state, which indicates an illegal gamestate. Used for checking legality of a hypothetical gamestate.
-        public bool KingIsCapturable()
+        private bool KingIsCapturable()
         {
             // Has to search through every piece and see if any of it's moves can capture a king.
             for (int row = 0; row < 8; row++)
@@ -1131,7 +1132,7 @@ namespace AWSSDK.Examples.ChessGame
         }
 
         // Any Exceptions involving the Board State
-        public class BoardStateException : System.Exception
+        private class BoardStateException : System.Exception
         {
             public BoardStateException() : base() { }
             public BoardStateException(string message) : base(message) { }
