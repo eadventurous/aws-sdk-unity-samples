@@ -9,6 +9,7 @@ namespace AWSSDK.Examples.ChessGame
     public class Board: IBoard
     {
         private int _id;
+        public ChessData.ChessMove PreviousMove { get; private set; }
         
         public Board(int matchId)
         {
@@ -77,10 +78,10 @@ namespace AWSSDK.Examples.ChessGame
             return move;
         }
 
-        public ChessData.ChessMove GetPreviousMove()
+        /*public ChessData.ChessMove GetPreviousMove()
         {
             return ParseMove(GetResponse("get_previous_move", null));
-        }
+        }*/
 
         public IEnumerable<ChessData.ChessMove> GetPossibleMoves(ChessData.Coordinate coordinate)
         {
@@ -111,7 +112,10 @@ namespace AWSSDK.Examples.ChessGame
             request.Add("is_check_mate", newMove.IsCheckMate.ToString());
             request.Add("kingside_castle", newMove.KingsideCastle.ToString());
             request.Add("queenside_castle", newMove.QueensideCastle.ToString());
-            return bool.Parse(GetResponse("try_apply_move", request));
+            var status = bool.Parse(GetResponse("try_apply_move", request));
+            if (status)
+                PreviousMove = newMove;
+            return status;
         }
 
         public string GetForsythEdwardsNotation()
