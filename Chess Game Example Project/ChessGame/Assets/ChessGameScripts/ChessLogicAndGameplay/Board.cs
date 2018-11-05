@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
+using SimpleJSON;
 
 namespace AWSSDK.Examples.ChessGame
 {
@@ -13,18 +14,22 @@ namespace AWSSDK.Examples.ChessGame
         {
             var requestParams = new Dictionary<string, string>();
             requestParams.Add("matchId", matchId.ToString());
-            _id = int.Parse(GetResponse(requestParams));
+            _id = int.Parse(GetResponse("get_board_id", requestParams));
             
         }
 
         private static readonly string GatewayUri = "";
 
-        public string GetResponse(Dictionary<String, String> requestParams)
+        public string GetResponse(string func, Dictionary<String, String> requestParams)
         {
-            string additionalUri = "?";
-            foreach (var key in requestParams.Keys)
+            string additionalUri = func;
+            if (requestParams != null)
             {
-                additionalUri += key + "=" + requestParams[key];
+                additionalUri += "/?";
+                foreach (var key in requestParams.Keys)
+                {
+                    additionalUri += key + "=" + requestParams[key];
+                }
             }
             using (UnityWebRequest www = UnityWebRequest.Get(GatewayUri+additionalUri))
             {
@@ -46,7 +51,8 @@ namespace AWSSDK.Examples.ChessGame
         
         public ChessData.ChessPieceColor GetTurnColor()
         {
-            throw new System.NotImplementedException();
+            var color = int.Parse(GetResponse("get_turn_color", null));
+            return (ChessData.ChessPieceColor) color;
         }
 
         public ChessData.ChessMove GetPreviousMove()
