@@ -1,9 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace AWSSDK.Examples.ChessGame
 {
     //common provider of all general chess types and constants
-    public sealed class ChessData
+    public abstract class ChessData
     {
         public const string InitialGameFen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
         public const string InitialLongAlgNotation = "";
