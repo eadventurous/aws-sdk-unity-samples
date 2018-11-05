@@ -57,14 +57,46 @@ namespace AWSSDK.Examples.ChessGame
             return (ChessData.ChessPieceColor) color;
         }
 
+        private ChessData.ChessMove ParseMove(string json)
+        {
+            var parsed = JSON.Parse(json);
+            var pieceType = (ChessData.ChessPieceType)int.Parse(parsed["chess_piece_type"]);
+            var isCapture = bool.Parse(parsed["is_capture"]);
+            var isPromotioToQueen = bool.Parse(parsed["is_promotion_to_queen"]);
+            var drawOfferExtended = bool.Parse(parsed["draw_offer_extended"]);
+            var isCheck = bool.Parse(parsed["is_check"]);
+            var isCheckMate = bool.Parse(parsed["is_check_mate"]);
+            var kingsideCastle = bool.Parse(parsed["kingsideCastle"]);
+            var queensideCastle = bool.Parse(parsed["queenside_castle"]);
+            var fromRow = int.Parse(parsed["from"]["row"]);
+            var fromColumn = int.Parse(parsed["from"]["column"]);
+            var fromCoord = new ChessData.Coordinate(fromRow, fromColumn);
+            var toRow = int.Parse(parsed["to"]["row"]);
+            var toColumn = int.Parse(parsed["to"]["column"]);
+            var toCoord = new ChessData.Coordinate(toRow, toColumn);
+            var move = new ChessData.ChessMove(fromCoord, toCoord, pieceType, isCapture,
+                isPromotioToQueen, drawOfferExtended, isCheck, isCheckMate,
+                kingsideCastle, queensideCastle);
+            return move;
+        }
+
         public ChessData.ChessMove GetPreviousMove()
         {
-            throw new System.NotImplementedException();
+            return ParseMove(GetResponse("get_previous_move", null));
         }
 
         public IEnumerable<ChessData.ChessMove> GetPossibleMoves(ChessData.Coordinate coordinate)
         {
-            throw new System.NotImplementedException();
+            var request = new Dictionary<string, string>();
+            request.Add("row", coordinate.Row.ToString());
+            request.Add("column", coordinate.Column.ToString());
+            var parsed = JSON.Parse(GetResponse("get_piece_at_coordinate", request));
+            var list = new LinkedList<ChessData.ChessMove>();
+            foreach (var move in parsed["moves"].AsArray)
+            {
+                list.AddLast(ParseMove(move.Value));
+            }
+            return list;
         }
 
         public bool TryApplyMove(ChessData.ChessMove newMove)
@@ -80,7 +112,7 @@ namespace AWSSDK.Examples.ChessGame
             request.Add("draw_offer_extended", newMove.DrawOfferExtended.ToString());
             request.Add("is_check", newMove.IsCheck.ToString());
             request.Add("is_check_mate", newMove.IsCheckMate.ToString());
-            request.Add("kingsideCastle", newMove.KingsideCastle.ToString());
+            request.Add("kingside_castle", newMove.KingsideCastle.ToString());
             request.Add("queenside_castle", newMove.QueensideCastle.ToString());
             return bool.Parse(GetResponse("try_apply_move", request));
         }
