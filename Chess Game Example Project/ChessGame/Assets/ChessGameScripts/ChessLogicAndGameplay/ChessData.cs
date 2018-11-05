@@ -14,7 +14,9 @@ namespace AWSSDK.Examples.ChessGame
         }
         public enum ChessPieceColor
         {
-            None, White, Black
+            None = 0,
+            White = 1, 
+            Black = 2
         }
         // The directions that a rook can move.
         public static readonly List<int[]> RookDirections = new List<int[]> { new int[2] { 0, 1 }, new int[2] { 0, -1 }, new int[2] { -1, 0 }, new int[2] { 1, 0 } };
