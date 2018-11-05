@@ -221,9 +221,9 @@ namespace AWSSDK.Examples.ChessGame
                         writer.WritePropertyName(SelfIsWhitePRopertyName);
                         writer.Write(matchState.SelfIsWhite);
                         writer.WritePropertyName(ForsythEdwardsNotationPropertyName);
-                        writer.Write(matchState.BoardState.ToForsythEdwardsNotation());
+                        writer.Write(matchState.Board.GetForsythEdwardsNotation());
                         writer.WritePropertyName(AlgebraicNotationPropertyName);
-                        writer.Write(matchState.BoardState.PreviousMove.ToLongAlgebraicNotation());
+                        writer.Write(matchState.Board.PreviousMove.ToLongAlgebraicNotation());
                         writer.WriteObjectEnd();
                         matchesDataset.Put(matchState.Identifier, stringBuilder.ToString());
                     }
@@ -570,8 +570,8 @@ namespace AWSSDK.Examples.ChessGame
             // to a table based on the attributes attached to the SimpleMatchInfo.
             var matchInfo = new SimpleMatchInfo();
             matchInfo.MatchId = matchState.Identifier;
-            matchInfo.FEN = matchState.BoardState.ToForsythEdwardsNotation();
-            matchInfo.AlgebraicNotation = matchState.BoardState.PreviousMove.ToLongAlgebraicNotation();
+            matchInfo.FEN = matchState.Board.GetForsythEdwardsNotation();
+            matchInfo.AlgebraicNotation = matchState.Board.PreviousMove.ToLongAlgebraicNotation();
             matchInfo.WhitePlayerId = matchState.SelfIsWhite ? Credentials.GetCachedIdentityId() : matchState.Opponent.Id;
             matchInfo.BlackPlayerId = matchState.SelfIsWhite ? matchState.Opponent.Id : Credentials.GetCachedIdentityId();
             // Save the match and notify the caller of success/failure.

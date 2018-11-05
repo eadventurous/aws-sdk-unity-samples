@@ -6,7 +6,7 @@ namespace AWSSDK.Examples.ChessGame
     {
         ChessData.ChessPieceColor GetTurnColor();
 
-        ChessData.ChessMove GetPreviousMove();
+        //ChessData.ChessMove GetPreviousMove();
 
         IEnumerable<ChessData.ChessMove> GetPossibleMoves(ChessData.Coordinate coordinate);
 
