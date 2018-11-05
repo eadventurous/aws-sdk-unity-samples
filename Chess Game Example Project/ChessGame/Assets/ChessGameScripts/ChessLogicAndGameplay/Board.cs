@@ -90,7 +90,13 @@ namespace AWSSDK.Examples.ChessGame
 
         public ChessData.ChessPiece GetPieceAtCoordinate(ChessData.Coordinate coordinate)
         {
-            throw new System.NotImplementedException();
+            var request = new Dictionary<string, string>();
+            request.Add("row", coordinate.Row.ToString());
+            request.Add("column", coordinate.Column.ToString());
+            var parsed = JSON.Parse(GetResponse("get_piece_at_coordinate", request));
+            var color = (ChessData.ChessPieceColor)int.Parse(parsed["color"]);
+            var type = (ChessData.ChessPieceType)int.Parse(parsed["type"]);
+            return new ChessData.ChessPiece(color, type);
         }
     }
 }
