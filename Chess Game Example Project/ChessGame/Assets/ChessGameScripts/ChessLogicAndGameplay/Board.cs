@@ -14,7 +14,6 @@ namespace AWSSDK.Examples.ChessGame
         public Board(string matchId)
         {
             _id = matchId;
-
         }
 
         private static readonly string GatewayUri = "";
