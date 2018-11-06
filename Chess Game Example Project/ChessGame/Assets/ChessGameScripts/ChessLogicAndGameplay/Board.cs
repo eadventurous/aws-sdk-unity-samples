@@ -8,22 +8,19 @@ namespace AWSSDK.Examples.ChessGame
 {
     public class Board: IBoard
     {
-        private int _id;
+        private string _id;
         public ChessData.ChessMove PreviousMove { get; private set; }
         
         public Board(string matchId)
         {
-            var requestParams = new Dictionary<string, string>();
-            requestParams.Add("matchId", matchId);
-            _id = int.Parse(GetResponse("get_board_id", requestParams));
-            
+            _id = matchId;
         }
 
         private static readonly string GatewayUri = "";
 
         public string GetResponse(string func, Dictionary<String, String> requestParams)
         {
-            string additionalUri = func + "/?" + "board_id=" + _id.ToString();
+            string additionalUri = func + "/?" + "board_id=" + _id;
             if (requestParams != null)
             {
                 foreach (var key in requestParams.Keys)
