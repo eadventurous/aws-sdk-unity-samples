@@ -371,7 +371,7 @@ namespace AWSSDK.Examples.ChessGame
             Application.LoadLevel("Board");
             if (opponent.IsLocalOpponent())
             {
-                var matchState = new GameState.MatchState(opponent, BoardState.InitialGameFen, BoardState.InitialLongAlgNotation, true, opponent.Id + DateTime.Now.ToUniversalTime().ToString());
+                var matchState = new GameState.MatchState(opponent, ChessData.InitialGameFen, ChessData.InitialLongAlgNotation, true, opponent.Id + DateTime.Now.ToUniversalTime().ToString());
                 GameState.MatchStates[matchState.Identifier] = matchState;
                 if (OnCurrentMatchStateAvailable == null)
                 {

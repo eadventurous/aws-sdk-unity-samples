@@ -100,28 +100,28 @@ namespace AWSSDK.Examples.ChessGame
             }
         }
 
-        public Image prefabToPieceImage(BoardState.ChessPiece piece, Color color)
+        public Image prefabToPieceImage(ChessData.ChessPiece piece, Color color)
         {
             Image pieceSpritePrefab = null;
             switch (piece.Type)
             {
-                case BoardState.ChessPieceType.Rook:
-                    pieceSpritePrefab = piece.Color == BoardState.ChessPieceColor.White ? WhiteRookPrefab : BlackRookPrefab;
+                case ChessData.ChessPieceType.Rook:
+                    pieceSpritePrefab = piece.Color == ChessData.ChessPieceColor.White ? WhiteRookPrefab : BlackRookPrefab;
                     break;
-                case BoardState.ChessPieceType.Knight:
-                    pieceSpritePrefab = piece.Color == BoardState.ChessPieceColor.White ? WhiteKnightPrefab : BlackKnightPrefab;
+                case ChessData.ChessPieceType.Knight:
+                    pieceSpritePrefab = piece.Color == ChessData.ChessPieceColor.White ? WhiteKnightPrefab : BlackKnightPrefab;
                     break;
-                case BoardState.ChessPieceType.Bishop:
-                    pieceSpritePrefab = piece.Color == BoardState.ChessPieceColor.White ? WhiteBishopPrefab : BlackBishopPrefab;
+                case ChessData.ChessPieceType.Bishop:
+                    pieceSpritePrefab = piece.Color == ChessData.ChessPieceColor.White ? WhiteBishopPrefab : BlackBishopPrefab;
                     break;
-                case BoardState.ChessPieceType.Queen:
-                    pieceSpritePrefab = piece.Color == BoardState.ChessPieceColor.White ? WhiteQueenPrefab : BlackQueenPrefab;
+                case ChessData.ChessPieceType.Queen:
+                    pieceSpritePrefab = piece.Color == ChessData.ChessPieceColor.White ? WhiteQueenPrefab : BlackQueenPrefab;
                     break;
-                case BoardState.ChessPieceType.King:
-                    pieceSpritePrefab = piece.Color == BoardState.ChessPieceColor.White ? WhiteKingPrefab : BlackKingPrefab;
+                case ChessData.ChessPieceType.King:
+                    pieceSpritePrefab = piece.Color == ChessData.ChessPieceColor.White ? WhiteKingPrefab : BlackKingPrefab;
                     break;
-                case BoardState.ChessPieceType.Pawn:
-                    pieceSpritePrefab = piece.Color == BoardState.ChessPieceColor.White ? WhitePawnPrefab : BlackPawnPrefab;
+                case ChessData.ChessPieceType.Pawn:
+                    pieceSpritePrefab = piece.Color == ChessData.ChessPieceColor.White ? WhitePawnPrefab : BlackPawnPrefab;
                     break;
             }
 
@@ -134,12 +134,12 @@ namespace AWSSDK.Examples.ChessGame
             return pieceImage;
         }
 
-        void RefreshBoard(GameState.MatchState matchState, BoardState.Coordinate? selected)
+        void RefreshBoard(GameState.MatchState matchState, ChessData.Coordinate? selected)
         {
             CurrentMatchState = matchState;
             StatusText.text = string.Format("{0} ({1})",
                 matchState.IsSelfTurn() ? "Your Turn" : "Their Turn",
-                matchState.BoardState.TurnColor == BoardState.ChessPieceColor.White ? "white" : "black");
+                matchState.Board.GetTurnColor() == ChessData.ChessPieceColor.White ? "white" : "black");
 
             for (int r = 0; r < 8; r++)
             {
@@ -152,23 +152,23 @@ namespace AWSSDK.Examples.ChessGame
                 }
             }
 
-            if (matchState.BoardState.PreviousMove.IsCheckMate)
+            if (matchState.Board.PreviousMove.IsCheckMate)
             {
                 TitleText.text = "Game Finished";
                 StatusText.text = string.Format("{0} won!", matchState.IsSelfTurn() ? "They" : "You");
                 return;
             }
 
-            HashSet<BoardState.ChessMove> moves;
-            var moveDestinations = new HashSet<BoardState.Coordinate>();
+            IEnumerable<ChessData.ChessMove> moves;
+            var moveDestinations = new HashSet<ChessData.Coordinate>();
             if (selected.HasValue)
             {
-                moves = matchState.BoardState.GetPossibleMoves(selected.Value);
+                moves = matchState.Board.GetPossibleMoves(selected.Value);
                 //TODO: server.GetPossibleMoves(board_id, selected.value)
             }
             else
             {
-                moves = new HashSet<BoardState.ChessMove>();
+                moves = new HashSet<ChessData.ChessMove>();
             }
             foreach (var move in moves)
             {
@@ -180,13 +180,13 @@ namespace AWSSDK.Examples.ChessGame
             {
                 for (int r = 0; r < 8; r++)
                 {
-                    var coordinate = new BoardState.Coordinate(r, c);
+                    var coordinate = new ChessData.Coordinate(r, c);
                     bool isSelectedCoordinate = selected.HasValue && selected.Value.Equals(coordinate);
                     bool isMoveDestination = moveDestinations.Contains(coordinate);
 
-                    BoardState.ChessPiece piece = matchState.BoardState.GetPieceAtCoordinate(coordinate);
+                    ChessData.ChessPiece piece = matchState.Board.GetPieceAtCoordinate(coordinate);
                     // pieces that are move destinations are handled later because clicking on them has movement behavior.
-                    if (piece.Type != BoardState.ChessPieceType.None && !isMoveDestination)
+                    if (piece.Type != ChessData.ChessPieceType.None && !isMoveDestination)
                     {
                         Color pieceHighlight = isSelectedCoordinate ? Color.green : Color.white;
                         Image pieceImage = prefabToPieceImage(piece, pieceHighlight);
@@ -218,20 +218,20 @@ namespace AWSSDK.Examples.ChessGame
             // Fill in pieces that are move destinations
             foreach (var move in moves)
             {
-                bool putsUserInCheck;
+                bool putsUserInCheck= matchState.Board.TryApplyMove(move);
                 var newMatchState = new GameState.MatchState(
                     matchState.Opponent,
-                    matchState.BoardState.TryApplyMove(move, out putsUserInCheck),
+                    matchState.Board,
                     //TODO: TryApplyMove(move, board_id)
                     matchState.SelfIsWhite,
                     matchState.Identifier);
 
                 if (!putsUserInCheck)
                 {
-                    bool isOpponentPiece = matchState.BoardState.GetPieceAtCoordinate(move.To).Type != BoardState.ChessPieceType.None;
+                    bool isOpponentPiece = matchState.Board.GetPieceAtCoordinate(move.To).Type != ChessData.ChessPieceType.None;
                     //TODO: GetPieceAtCoordinate(board_id, coord)
                     Color pieceHighlight = isOpponentPiece ? Color.red : Color.blue;
-                    BoardState.ChessPiece fromPiece = matchState.BoardState.GetPieceAtCoordinate(move.From);
+                    var fromPiece = matchState.Board.GetPieceAtCoordinate(move.From);
                     Image pieceImage = prefabToPieceImage(fromPiece, pieceHighlight);
                     pieceImage.transform.SetParent(TransformGrid[move.To.Row, move.To.Column], false);
 

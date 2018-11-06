@@ -84,7 +84,7 @@ namespace AWSSDK.Examples.ChessGame
         {
             public PlayerInfo Opponent { get; private set; }
             public bool SelfIsWhite { get; private set; }
-            public BoardState BoardState { get; set; }
+            public Board Board { get; private set; }
             public string Identifier { get; private set; }
 
             public MatchState(PlayerInfo opponent, string fen, string algebraicNotation, bool selfIsWhite, string identifier)
@@ -92,20 +92,20 @@ namespace AWSSDK.Examples.ChessGame
                 this.Opponent = opponent;
                 if (fen == null || algebraicNotation == null)
                 {
-                    this.BoardState = null;
+                    Board = null;
                 }
                 else
                 {
-                    this.BoardState = new BoardState(fen, algebraicNotation);
+                    Board = new Board(Identifier);
                 }
                 this.SelfIsWhite = selfIsWhite;
                 this.Identifier = identifier;
             }
 
-            public MatchState(PlayerInfo opponent, BoardState boardState, bool selfIsWhite, string identifier)
+            public MatchState(PlayerInfo opponent, Board board, bool selfIsWhite, string identifier)
             {
                 this.Opponent = opponent;
-                this.BoardState = boardState;
+                this.Board = board;
                 this.SelfIsWhite = selfIsWhite;
                 this.Identifier = identifier;
             }
@@ -113,7 +113,7 @@ namespace AWSSDK.Examples.ChessGame
             public bool IsSelfTurn()
             {
                 //TODO: this condition should be checked on server
-                return (BoardState.TurnColor == BoardState.ChessPieceColor.White) == SelfIsWhite;
+                return (Board.GetTurnColor() == ChessData.ChessPieceColor.White) == SelfIsWhite;
             }
         }
     }

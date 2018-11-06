@@ -9,11 +9,12 @@ namespace AWSSDK.Examples.ChessGame
     public class Board: IBoard
     {
         private int _id;
+        public ChessData.ChessMove PreviousMove { get; private set; }
         
-        public Board(int matchId)
+        public Board(string matchId)
         {
             var requestParams = new Dictionary<string, string>();
-            requestParams.Add("matchId", matchId.ToString());
+            requestParams.Add("matchId", matchId);
             _id = int.Parse(GetResponse("get_board_id", requestParams));
             
         }
@@ -22,16 +23,13 @@ namespace AWSSDK.Examples.ChessGame
 
         public string GetResponse(string func, Dictionary<String, String> requestParams)
         {
-            string additionalUri = func;
+            string additionalUri = func + "/?" + "board_id=" + _id.ToString();
             if (requestParams != null)
             {
-                additionalUri += "/?";
                 foreach (var key in requestParams.Keys)
                 {
-                    additionalUri += key + "=" + requestParams[key] + "&";
+                    additionalUri += "&" + key + "=" + requestParams[key];
                 }
-
-                additionalUri = additionalUri.Remove(additionalUri.Length - 1);
             }
             using (UnityWebRequest www = UnityWebRequest.Get(GatewayUri+additionalUri))
             {
@@ -80,10 +78,10 @@ namespace AWSSDK.Examples.ChessGame
             return move;
         }
 
-        public ChessData.ChessMove GetPreviousMove()
+        /*public ChessData.ChessMove GetPreviousMove()
         {
             return ParseMove(GetResponse("get_previous_move", null));
-        }
+        }*/
 
         public IEnumerable<ChessData.ChessMove> GetPossibleMoves(ChessData.Coordinate coordinate)
         {
@@ -114,7 +112,10 @@ namespace AWSSDK.Examples.ChessGame
             request.Add("is_check_mate", newMove.IsCheckMate.ToString());
             request.Add("kingside_castle", newMove.KingsideCastle.ToString());
             request.Add("queenside_castle", newMove.QueensideCastle.ToString());
-            return bool.Parse(GetResponse("try_apply_move", request));
+            var status = bool.Parse(GetResponse("try_apply_move", request));
+            if (status)
+                PreviousMove = newMove;
+            return status;
         }
 
         public string GetForsythEdwardsNotation()
